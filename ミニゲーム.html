@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+<script>
+var intervalId, score = 0, max_click = 0;
+
+
+function releace_click(){
+                                                                                //ボタンの連打制限解除
+  document.g_switch.gs_1.disabled = false;
+  document.g_switch.gs_2.disabled = false;
+  document.g_switch.gs_3.disabled = false;
+  document.g_switch.gs_4.disabled = false;
+  document.g_switch.gs_5.disabled = false;
+}
+
+function prevent_click(){                                                       //ボタンの連打制限
+  document.g_switch.gs_1.disabled = true;
+  document.g_switch.gs_2.disabled = true;
+  document.g_switch.gs_3.disabled = true;
+  document.g_switch.gs_4.disabled = true;
+  document.g_switch.gs_5.disabled = true;
+}
+
+function reset_data(){                                                          //全てをリセットする関数
+  score = 0, max_click = 0;
+  document.g_switch.gs_0.value = "Start";
+  document.g_switch.gs_1.value = "SW1";
+  document.g_switch.gs_2.value = "SW2";
+  document.g_switch.gs_3.value = "SW3";
+  document.g_switch.gs_4.value = "SW4";
+  document.g_switch.gs_5.value = "SW5";
+  document.getElementById("myProgress").value = 0;
+  document.g_switch.gs_0.disabled = false;
+  releace_click();
+}
+
+
+function count_start(){                                                         //20秒間のカウントダウン開始
+  document.g_switch.gs_0.value = 20;
+  document.g_switch.gs_1.value = Math.floor(Math.random()*100);
+  document.g_switch.gs_2.value = Math.floor(Math.random()*100);
+  document.g_switch.gs_3.value = Math.floor(Math.random()*100);
+  document.g_switch.gs_4.value = Math.floor(Math.random()*100);
+  document.g_switch.gs_5.value = Math.floor(Math.random()*100);                 //各スイッチのランダムな値
+  intervalId = setInterval(count, 1000);                                        //１秒ごとに関数countを行う
+}
+
+function count(){
+  releace_click();                                                              //ボタン制限解除
+
+  document.g_switch.gs_1.value = 1 + Math.floor(Math.random()*100);
+  document.g_switch.gs_2.value = 1 + Math.floor(Math.random()*100);
+  document.g_switch.gs_3.value = 1 + Math.floor(Math.random()*100);
+  document.g_switch.gs_4.value = 1 + Math.floor(Math.random()*100);
+  document.g_switch.gs_5.value = 1 + Math.floor(Math.random()*100);                 //1秒毎に変化する各スイッチの値(1~100までの乱数)
+
+  document.g_switch.gs_0.value --;                                              //デクリメントで20->0までカウント
+  if(document.g_switch.gs_0.value == 0){                                        //0以下になれば終了
+    clearInterval(intervalId);
+    document.g_switch.gs_0.value = "fin";
+    document.g_switch.gs_1.value = "-";
+    document.g_switch.gs_2.value = "-";
+    document.g_switch.gs_3.value = "-";
+    document.g_switch.gs_4.value = "-";
+    document.g_switch.gs_5.value = "-";
+    prevent_click();                                                            //終了後,押すとnanと表示されてしまうので強制的に押せないようにする。
+  }
+
+}
+
+
+function selected(i){                                                           //押されたボタンが最大値であれば加算して最大値のクリック回数を1増やす関数
+
+  prevent_click();                                                              //一度スイッチを押すと二度目が押せないようにする
+
+  //配列に入れてそれぞれの値を管理する
+  var array = [document.g_switch.gs_1.value, document.g_switch.gs_2.value, document.g_switch.gs_3.value, document.g_switch.gs_4.value, document.g_switch.gs_5.value]
+
+  var max = Math.max(array[0], array[1], array[2], array[3], array[4]);         //5つの数の中でそのときの最も大きい数字をmaxに代入
+
+  if(max == array[i-1]){                                                        //最大値と押したボタンの値が等しければscoreに加算
+    score = score + max;
+    max_click++;
+  }else{                                                                        //最大値と一致しなければscoreに減算
+    score = score - array[i-1];
+  }
+  if(score < 0){                                                                //取得ポイントのマイナスは考えない
+      score = 0;
+  }
+  document.g_switch.result.value = score;                                       //resultにscoreを代入
+  document.getElementById("myProgress").value = max_click;                      //最大成功クリック回数をプログレスバーに反映させる
+  document.g_switch.m_click.value = max_click;
+}
+
+
+</script>
+
+<body>
+  <form name="g_switch">
+
+    <div style="text-align: center">
+
+  <input type="button" name="gs_0" value="Start" style="width:60px; height: 50px; font-size:20px;" onclick = "count_start(); this.disabled = true"></div><br>
+  <div style="text-align: center">
+    <input type="button" name="gs_1" value="SW1" style="width:50px; height: 50px; font-size:20px;" onclick = "selected(1);">
+    <input type="button" name="gs_2" value="SW2" style="width:50px; height: 50px; font-size:20px;" onclick = "selected(2);">
+    <input type="button" name="gs_3" value="SW3" style="width:50px; height: 50px; font-size:20px;" onclick = "selected(3);">
+    <input type="button" name="gs_4" value="SW4" style="width:50px; height: 50px; font-size:20px;" onclick = "selected(4);">
+    <input type="button" name="gs_5" value="SW5" style="width:50px; height: 50px; font-size:20px;" onclick = "selected(5);">
+  </div><br>
+
+  <div style="text-align: center">
+  score:<input type="text" name="result" value="0" style="width:40px; height: 15px; font-size:15px;"></div>
+
+  <div style="text-align: center">
+    <progress id="myProgress" value="0" max="20"></progress>
+
+  <p>最大値クリック回数:<input type="text" name="m_click" value="0" style="width:20px; height: 15px; font-size:15px;">回</p>
+  <input type="reset" value="リセット" onclick = "reset_data()"></div>
+
+</form>
+</body>
+
+</html>
